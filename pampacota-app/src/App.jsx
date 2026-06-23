@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import CadastroFornecedor from "./pages/CadastroFornecedor";
 import Login from "./pages/Login";
 import PerfilFornecedor from "./pages/PerfilFornecedor";
+import AcompanharCotacao from "./pages/AcompanharCotacao";
 import { watchAuthState, buscarFornecedorPorUid, logout } from "./lib/data";
 import "./styles/global.css";
 
@@ -40,6 +41,7 @@ export default function App() {
         />
         <Route path="/entrar" element={<Login onLoginOk={setFornecedor} />} />
         <Route path="/empresa/:slug" element={<PerfilFornecedor />} />
+        <Route path="/cotacao/:codigo" element={<AcompanharCotacao />} />
       </Routes>
       <Footer />
     </BrowserRouter>

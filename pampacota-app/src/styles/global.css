@@ -124,6 +124,37 @@ header.site-header{
 .quote-card .btn{width:100%; margin-top:6px;}
 .quote-card .fine{font-size:0.74rem; color:var(--ink-soft); text-align:center; margin-top:12px;}
 .field-error{color:var(--red); font-size:0.78rem; margin-top:4px;}
+
+/* MULTI-ITEM QUOTE FORM */
+.item-cotacao-card{
+  background:var(--bg-alt);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.item-cotacao-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.item-cotacao-icon{font-size:1.1rem;}
+.item-cotacao-remove{
+  background:none; border:none; color:var(--red);
+  font-size:0.78rem; font-weight:700; cursor:pointer;
+  padding:2px 6px;
+}
+.btn-add-item{
+  width:100%;
+  border-style:dashed;
+  margin-bottom:14px;
+}
+.quote-summary{
+  display:flex; gap:18px; flex-wrap:wrap;
+  padding:12px 14px; margin-bottom:14px;
+  background:var(--bg-alt); border-radius:8px;
+  font-size:0.82rem; color:var(--ink-soft);
+}
+.quote-summary strong{color:var(--green-deep);}
 .form-msg-ok{
   background:#EAF3EC; border:1px solid var(--green); color:var(--green-deep);
   padding:12px 14px; border-radius:8px; font-size:0.88rem; margin-bottom:16px;

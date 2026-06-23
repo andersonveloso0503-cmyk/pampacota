@@ -1,42 +1,71 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import RsMark from "../components/RsMark";
+import ItemCotacaoForm from "../components/ItemCotacaoForm";
 import { criarCotacao } from "../lib/data";
+import { CATEGORIAS, calcularHorasTotais, calcularPessoasTotais } from "../lib/catalogo";
 
-const CATEGORIAS = [
-  "Limpeza e conservação",
-  "Portaria e recepção",
-  "Segurança",
-  "Zeladoria / manutenção predial",
-  "Outro serviço terceirizado",
-];
+function novoItem() {
+  const cat = CATEGORIAS[0];
+  return {
+    categoria: cat.id,
+    quantidade: 1,
+    regime: cat.opcoesRegime[0].id,
+  };
+}
 
 export default function Home() {
-  const [form, setForm] = useState({
-    categoria: CATEGORIAS[0],
-    cidade: "",
-    telefone: "",
-    descricao: "",
-  });
+  const [itens, setItens] = useState([novoItem()]);
+  const [dadosContato, setDadosContato] = useState({ cidade: "", telefone: "", descricao: "" });
+  const [fotos, setFotos] = useState([]);
   const [status, setStatus] = useState("idle"); // idle | loading | ok | error
   const [errorMsg, setErrorMsg] = useState("");
+  const [linkAcompanhamento, setLinkAcompanhamento] = useState(null);
 
-  function update(field, value) {
-    setForm((f) => ({ ...f, [field]: value }));
+  function updateContato(field, value) {
+    setDadosContato((f) => ({ ...f, [field]: value }));
+  }
+
+  function updateItem(index, novoValor) {
+    setItens((lista) => lista.map((it, i) => (i === index ? novoValor : it)));
+  }
+
+  function adicionarItem() {
+    setItens((lista) => [...lista, novoItem()]);
+  }
+
+  function removerItem(index) {
+    setItens((lista) => lista.filter((_, i) => i !== index));
+  }
+
+  function handleFotosChange(e) {
+    const arquivos = Array.from(e.target.files || []).slice(0, 5);
+    setFotos(arquivos);
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.cidade.trim() || !form.telefone.trim() || !form.descricao.trim()) {
+    if (!dadosContato.cidade.trim() || !dadosContato.telefone.trim()) {
       setStatus("error");
-      setErrorMsg("Preencha cidade, telefone e a descrição da sua necessidade.");
+      setErrorMsg("Preencha cidade e telefone para receber as propostas.");
       return;
     }
     setStatus("loading");
     try {
-      await criarCotacao(form);
+      const horasTotais = calcularHorasTotais(itens);
+      const pessoasTotais = calcularPessoasTotais(itens);
+      const cotacao = await criarCotacao({
+        itens,
+        horasTotais,
+        pessoasTotais,
+        fotos,
+        ...dadosContato,
+      });
       setStatus("ok");
-      setForm({ categoria: CATEGORIAS[0], cidade: "", telefone: "", descricao: "" });
+      setLinkAcompanhamento(`${window.location.origin}/cotacao/${cotacao.codigoAcesso}`);
+      setItens([novoItem()]);
+      setDadosContato({ cidade: "", telefone: "", descricao: "" });
+      setFotos([]);
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -105,35 +134,46 @@ export default function Home() {
 
             {status === "ok" && (
               <div className="form-msg-ok">
-                Cotação enviada! Fornecedores da sua região vão entrar em
-                contato em breve.
+                Cotação enviada! Até 4 fornecedores da sua região vão poder
+                enviar proposta.
+                {linkAcompanhamento && (
+                  <>
+                    <br />
+                    Guarde este link para acompanhar as propostas:
+                    <br />
+                    <a href={linkAcompanhamento} style={{ fontWeight: 700, wordBreak: "break-all" }}>
+                      {linkAcompanhamento}
+                    </a>
+                  </>
+                )}
               </div>
             )}
             {status === "error" && (
               <div className="form-msg-error">{errorMsg}</div>
             )}
 
-            <div className="field">
-              <label>Categoria do serviço</label>
-              <select
-                value={form.categoria}
-                onChange={(e) => update("categoria", e.target.value)}
-              >
-                {CATEGORIAS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field-row">
+            {itens.map((item, i) => (
+              <ItemCotacaoForm
+                key={i}
+                item={item}
+                onChange={(novo) => updateItem(i, novo)}
+                onRemove={() => removerItem(i)}
+                podeRemover={itens.length > 1}
+              />
+            ))}
+
+            <button type="button" className="btn btn-ghost btn-add-item" onClick={adicionarItem}>
+              + Adicionar outro serviço
+            </button>
+
+            <div className="field-row" style={{ marginTop: 16 }}>
               <div className="field">
                 <label>Cidade</label>
                 <input
                   type="text"
                   placeholder="Porto Alegre"
-                  value={form.cidade}
-                  onChange={(e) => update("cidade", e.target.value)}
+                  value={dadosContato.cidade}
+                  onChange={(e) => updateContato("cidade", e.target.value)}
                 />
               </div>
               <div className="field">
@@ -141,18 +181,27 @@ export default function Home() {
                 <input
                   type="text"
                   placeholder="(51) 9...."
-                  value={form.telefone}
-                  onChange={(e) => update("telefone", e.target.value)}
+                  value={dadosContato.telefone}
+                  onChange={(e) => updateContato("telefone", e.target.value)}
                 />
               </div>
             </div>
             <div className="field">
-              <label>Detalhe sua necessidade</label>
+              <label>Fotos do local (até 5)</label>
+              <input type="file" accept="image/*" multiple onChange={handleFotosChange} />
+              {fotos.length > 0 && (
+                <p style={{ fontSize: "0.78rem", color: "var(--ink-soft)", marginTop: 6 }}>
+                  {fotos.length} foto(s) selecionada(s)
+                </p>
+              )}
+            </div>
+            <div className="field">
+              <label>Observações (opcional)</label>
               <textarea
-                rows={3}
-                placeholder="Ex: condomínio com 80 unidades, precisa de 2 porteiros..."
-                value={form.descricao}
-                onChange={(e) => update("descricao", e.target.value)}
+                rows={2}
+                placeholder="Algum detalhe extra que os fornecedores devem saber..."
+                value={dadosContato.descricao}
+                onChange={(e) => updateContato("descricao", e.target.value)}
               />
             </div>
             <button className="btn btn-primary" disabled={status === "loading"}>

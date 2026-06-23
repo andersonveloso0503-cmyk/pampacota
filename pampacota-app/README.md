@@ -16,7 +16,7 @@ const firebaseConfig = {
 };
 ```
 
-## 2. Regras de segurança do Firestore
+## 2. Regras de segurança do Firestore e Storage
 
 No Console Firebase → Firestore Database → aba **Regras**, cole:
 
@@ -34,13 +34,29 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // qualquer um pode criar uma cotação (formulário público)
-    // leitura/edição só por usuários autenticados (painel admin / fornecedor)
+    // qualquer um pode criar uma cotação (formulário público, sem login)
+    // qualquer um pode LER (o comprador acessa pelo link único, sem login)
+    // só usuários autenticados (fornecedores) podem atualizar (pegar/propor)
     match /cotacoes/{id} {
       allow create: if true;
-      allow read: if request.auth != null;
+      allow read: if true;
       allow update: if request.auth != null;
       allow delete: if false;
+    }
+  }
+}
+```
+
+No Console Firebase → Storage → aba **Rules**, cole:
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /cotacoes/{cotacaoId}/{arquivo} {
+      allow read: if true;
+      allow write: if request.resource.size < 8 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
     }
   }
 }
