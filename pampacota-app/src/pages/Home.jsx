@@ -15,6 +15,7 @@ function novoItem() {
 }
 
 export default function Home() {
+  const [etapaCotacao, setEtapaCotacao] = useState(1);
   const [itens, setItens] = useState([novoItem()]);
   const [dadosContato, setDadosContato] = useState({ cidade: "", telefone: "", descricao: "" });
   const [fotos, setFotos] = useState([]);
@@ -43,6 +44,18 @@ export default function Home() {
     setFotos(arquivos);
   }
 
+  function irParaContato() {
+    setEtapaCotacao(2);
+    setStatus("idle");
+    setErrorMsg("");
+  }
+
+  function voltarParaItens() {
+    setEtapaCotacao(1);
+    setStatus("idle");
+    setErrorMsg("");
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!dadosContato.cidade.trim() || !dadosContato.telefone.trim()) {
@@ -66,6 +79,7 @@ export default function Home() {
       setItens([novoItem()]);
       setDadosContato({ cidade: "", telefone: "", descricao: "" });
       setFotos([]);
+      setEtapaCotacao(1);
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -128,9 +142,12 @@ export default function Home() {
           <form className="quote-card" id="cotacao" onSubmit={handleSubmit}>
             <span className="mono">Cotação rápida</span>
             <h3>O que você está buscando?</h3>
-            <p className="sub">
-              Preencha e até 5 fornecedores qualificados entram em contato.
-            </p>
+
+            <div className="quote-steps">
+              <div className={`quote-step-dot ${etapaCotacao >= 1 ? "ativa" : ""}`}>1</div>
+              <div className="quote-step-linha" />
+              <div className={`quote-step-dot ${etapaCotacao >= 2 ? "ativa" : ""}`}>2</div>
+            </div>
 
             {status === "ok" && (
               <div className="form-msg-ok">
@@ -152,64 +169,86 @@ export default function Home() {
               <div className="form-msg-error">{errorMsg}</div>
             )}
 
-            {itens.map((item, i) => (
-              <ItemCotacaoForm
-                key={i}
-                item={item}
-                onChange={(novo) => updateItem(i, novo)}
-                onRemove={() => removerItem(i)}
-                podeRemover={itens.length > 1}
-              />
-            ))}
+            {etapaCotacao === 1 && (
+              <>
+                <p className="sub">Descreva os serviços que você precisa.</p>
 
-            <button type="button" className="btn btn-ghost btn-add-item" onClick={adicionarItem}>
-              + Adicionar outro serviço
-            </button>
+                {itens.map((item, i) => (
+                  <ItemCotacaoForm
+                    key={i}
+                    item={item}
+                    onChange={(novo) => updateItem(i, novo)}
+                    onRemove={() => removerItem(i)}
+                    podeRemover={itens.length > 1}
+                  />
+                ))}
 
-            <div className="field-row" style={{ marginTop: 16 }}>
-              <div className="field">
-                <label>Cidade</label>
-                <input
-                  type="text"
-                  placeholder="Porto Alegre"
-                  value={dadosContato.cidade}
-                  onChange={(e) => updateContato("cidade", e.target.value)}
-                />
-              </div>
-              <div className="field">
-                <label>Telefone / WhatsApp</label>
-                <input
-                  type="text"
-                  placeholder="(51) 9...."
-                  value={dadosContato.telefone}
-                  onChange={(e) => updateContato("telefone", e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="field">
-              <label>Fotos do local (até 5)</label>
-              <input type="file" accept="image/*" multiple onChange={handleFotosChange} />
-              {fotos.length > 0 && (
-                <p style={{ fontSize: "0.78rem", color: "var(--ink-soft)", marginTop: 6 }}>
-                  {fotos.length} foto(s) selecionada(s)
+                <button type="button" className="btn btn-ghost btn-add-item" onClick={adicionarItem}>
+                  + Adicionar outro serviço
+                </button>
+
+                <button type="button" className="btn btn-primary" style={{ width: "100%", marginTop: 6 }} onClick={irParaContato}>
+                  Continuar →
+                </button>
+              </>
+            )}
+
+            {etapaCotacao === 2 && (
+              <>
+                <p className="sub">Agora seus dados de contato e do local.</p>
+
+                <div className="field-row">
+                  <div className="field">
+                    <label>Cidade</label>
+                    <input
+                      type="text"
+                      placeholder="Porto Alegre"
+                      value={dadosContato.cidade}
+                      onChange={(e) => updateContato("cidade", e.target.value)}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Telefone / WhatsApp</label>
+                    <input
+                      type="text"
+                      placeholder="(51) 9...."
+                      value={dadosContato.telefone}
+                      onChange={(e) => updateContato("telefone", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label>Fotos do local (até 5)</label>
+                  <input type="file" accept="image/*" multiple onChange={handleFotosChange} />
+                  {fotos.length > 0 && (
+                    <p style={{ fontSize: "0.78rem", color: "var(--ink-soft)", marginTop: 6 }}>
+                      {fotos.length} foto(s) selecionada(s)
+                    </p>
+                  )}
+                </div>
+                <div className="field">
+                  <label>Observações (opcional)</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Algum detalhe extra que os fornecedores devem saber..."
+                    value={dadosContato.descricao}
+                    onChange={(e) => updateContato("descricao", e.target.value)}
+                  />
+                </div>
+
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={voltarParaItens}>
+                    ← Voltar
+                  </button>
+                  <button className="btn btn-primary" style={{ flex: 2 }} disabled={status === "loading"}>
+                    {status === "loading" ? "Enviando..." : "Receber propostas →"}
+                  </button>
+                </div>
+                <p className="fine">
+                  Ao continuar você concorda com nossos termos de uso.
                 </p>
-              )}
-            </div>
-            <div className="field">
-              <label>Observações (opcional)</label>
-              <textarea
-                rows={2}
-                placeholder="Algum detalhe extra que os fornecedores devem saber..."
-                value={dadosContato.descricao}
-                onChange={(e) => updateContato("descricao", e.target.value)}
-              />
-            </div>
-            <button className="btn btn-primary" disabled={status === "loading"}>
-              {status === "loading" ? "Enviando..." : "Receber propostas →"}
-            </button>
-            <p className="fine">
-              Ao continuar você concorda com nossos termos de uso.
-            </p>
+              </>
+            )}
           </form>
         </div>
       </section>
