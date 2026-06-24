@@ -121,17 +121,18 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
         {cotacoes.map((cotacao) => {
           const jaPegou = cotacao.fornecedoresInteressados.includes(fornecedorLogado.uid);
           const vagas = MAX_FORNECEDORES_POR_COTACAO - cotacao.fornecedoresInteressados.length;
+          const nivelUrgencia = vagas === 1 ? "urgente" : vagas === 2 ? "atencao" : "normal";
           return (
             <div key={cotacao.id} className="cotacao-card-painel">
-              <div className="cotacao-card-painel-head">
-                <div>
-                  <strong>{cotacao.cidade}</strong>
-                  <span className="mono" style={{ marginLeft: 10, color: "var(--ink-soft)" }}>
-                    {vagas} vaga(s) restante(s)
-                  </span>
-                  <span className="badge badge-pendente" style={{ marginLeft: 10 }}>
-                    {cotacao.horasTotais} Moedas RS
-                  </span>
+              <div className="cotacao-card-painel-top">
+                <div className="cotacao-card-painel-info">
+                  <strong className="cotacao-cidade">{cotacao.cidade}</strong>
+                  <div className="cotacao-card-painel-tags">
+                    <span className={`vagas-pill vagas-pill-${nivelUrgencia}`}>
+                      {vagas === 1 ? "Última vaga!" : `${vagas} vagas restantes`}
+                    </span>
+                    <span className="badge badge-pendente">{cotacao.horasTotais} Moedas RS</span>
+                  </div>
                 </div>
                 {jaPegou ? (
                   <span className="badge badge-verificado">Você já pegou</span>
@@ -142,21 +143,33 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                 )}
               </div>
 
-              {(cotacao.itens || []).map((item, i) => {
-                const cat = getCategoria(item.categoria);
-                const regime = getOpcaoRegime(item.categoria, item.regime);
-                return (
-                  <p key={i} style={{ fontSize: "0.88rem", margin: "4px 0" }}>
-                    {cat.icon} <strong>{item.quantidade}x</strong> {cat.label} — {regime.label}
-                  </p>
-                );
-              })}
+              <div className="cotacao-card-painel-body">
+                <div className="cotacao-card-painel-itens">
+                  {(cotacao.itens || []).map((item, i) => {
+                    const cat = getCategoria(item.categoria);
+                    const regime = getOpcaoRegime(item.categoria, item.regime);
+                    return (
+                      <p key={i} style={{ fontSize: "0.88rem", margin: "4px 0" }}>
+                        {cat.icon} <strong>{item.quantidade}x</strong> {cat.label} — {regime.label}
+                      </p>
+                    );
+                  })}
 
-              {cotacao.descricao && (
-                <p style={{ fontSize: "0.85rem", color: "var(--ink-soft)", marginTop: 8 }}>
-                  "{cotacao.descricao}"
-                </p>
-              )}
+                  {cotacao.descricao && (
+                    <p style={{ fontSize: "0.85rem", color: "var(--ink-soft)", marginTop: 8 }}>
+                      "{cotacao.descricao}"
+                    </p>
+                  )}
+                </div>
+
+                {cotacao.fotos && cotacao.fotos.length > 0 && (
+                  <div className="cotacao-card-painel-fotos">
+                    {cotacao.fotos.slice(0, 4).map((url, i) => (
+                      <img key={i} src={url} alt={`Foto do local ${i + 1}`} />
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {jaPegou && (
                 <button

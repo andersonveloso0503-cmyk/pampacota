@@ -148,6 +148,20 @@ header.site-header{
   border-style:dashed;
   margin-bottom:14px;
 }
+
+.quote-steps{
+  display:flex; align-items:center; justify-content:center;
+  gap:8px; margin:14px 0 18px;
+}
+.quote-step-dot{
+  width:24px; height:24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.74rem; font-weight:700;
+  background:var(--bg-alt); color:var(--ink-soft);
+  border:1.5px solid var(--line);
+}
+.quote-step-dot.ativa{ background:var(--green-deep); color:var(--white); border-color:var(--green-deep); }
+.quote-step-linha{ width:40px; height:1.5px; background:var(--line); }
 .quote-summary{
   display:flex; gap:18px; flex-wrap:wrap;
   padding:12px 14px; margin-bottom:14px;
@@ -252,6 +266,38 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
 }
 .servico-pill.active{border-color:var(--green); background:#EAF3EC; color:var(--green-deep);}
 
+.cadastro-steps{
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:28px; gap:4px;
+}
+.cadastro-step{ display:flex; align-items:center; gap:8px; }
+.cadastro-step span{
+  font-size:0.78rem; font-weight:600; color:var(--ink-soft);
+  display:none;
+}
+.cadastro-step span.ativa{ color:var(--green-deep); display:inline; }
+.cadastro-step-circle{
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.84rem; font-weight:700;
+  background:var(--bg-alt); color:var(--ink-soft);
+  border:1.5px solid var(--line);
+  flex-shrink:0;
+}
+.cadastro-step-circle.ativa{
+  background:var(--green-deep); color:var(--white); border-color:var(--green-deep);
+}
+.cadastro-step-circle.concluida{
+  background:var(--gold); color:var(--green-deep); border-color:var(--gold);
+}
+.cadastro-step-linha{
+  width:36px; height:1.5px; background:var(--line); margin:0 2px;
+}
+
+@media (min-width: 480px){
+  .cadastro-step span{ display:inline; }
+}
+
 /* PROFILE PAGE (perfil público) */
 .profile-hero{background:var(--green-deep); color:var(--white); padding:60px 0; position:relative; overflow:hidden;}
 .profile-hero .wrap{position:relative; z-index:1; display:flex; gap:24px; align-items:center; flex-wrap:wrap;}
@@ -303,12 +349,47 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
 
 /* PAINEL DO FORNECEDOR */
 .cotacao-card-painel{
-  background:var(--white); border:1px solid var(--line); border-radius:12px;
-  padding:20px; margin-bottom:14px;
+  background:var(--white); border:1px solid var(--line); border-radius:14px;
+  padding:22px; margin-bottom:16px;
+  transition:box-shadow .2s;
 }
-.cotacao-card-painel-head{
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:10px; flex-wrap:wrap; gap:10px;
+.cotacao-card-painel:hover{
+  box-shadow:0 12px 30px -14px rgba(16,42,32,0.16);
+}
+.cotacao-card-painel-top{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:14px; flex-wrap:wrap; margin-bottom:14px;
+  padding-bottom:14px; border-bottom:1px solid var(--line);
+}
+.cotacao-card-painel-info{ display:flex; flex-direction:column; gap:8px; }
+.cotacao-cidade{ font-size:1.05rem; color:var(--green-deep); }
+.cotacao-card-painel-tags{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+.vagas-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:20px;
+  font-size:0.76rem; font-weight:700;
+}
+.vagas-pill-normal{ background:#EAF3EC; color:var(--green-deep); }
+.vagas-pill-atencao{ background:#F6EFE2; color:#8A6D2E; }
+.vagas-pill-urgente{ background:#F6E9E9; color:var(--red); }
+
+.cotacao-card-painel-body{
+  display:flex; gap:18px; justify-content:space-between; flex-wrap:wrap;
+}
+.cotacao-card-painel-itens{ flex:1; min-width:200px; }
+.cotacao-card-painel-fotos{
+  display:flex; gap:8px; flex-wrap:wrap;
+  max-width:280px;
+}
+.cotacao-card-painel-fotos img{
+  width:62px; height:62px; object-fit:cover; border-radius:8px;
+  border:1px solid var(--line);
+}
+
+@media (max-width: 640px){
+  .cotacao-card-painel-body{ flex-direction:column; }
+  .cotacao-card-painel-fotos{ max-width:100%; }
 }
 
 /* MODAL */
