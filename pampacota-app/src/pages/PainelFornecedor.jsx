@@ -119,32 +119,49 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
         )}
 
         {cotacoes.map((cotacao) => {
+          const totalPegos = cotacao.fornecedoresInteressados.length;
           const jaPegou = cotacao.fornecedoresInteressados.includes(fornecedorLogado.uid);
-          const vagas = MAX_FORNECEDORES_POR_COTACAO - cotacao.fornecedoresInteressados.length;
+          const vagas = MAX_FORNECEDORES_POR_COTACAO - totalPegos;
           const nivelUrgencia = vagas === 1 ? "urgente" : vagas === 2 ? "atencao" : "normal";
+
           return (
-            <div key={cotacao.id} className="cotacao-card-painel">
-              <div className="cotacao-card-painel-top">
-                <div className="cotacao-card-painel-info">
-                  <strong className="cotacao-cidade">{cotacao.cidade}</strong>
-                  <div className="cotacao-card-painel-tags">
-                    <span className={`vagas-pill vagas-pill-${nivelUrgencia}`}>
-                      {vagas === 1 ? "Última vaga!" : `${vagas} vagas restantes`}
-                    </span>
-                    <span className="badge badge-pendente">{cotacao.horasTotais} Moedas RS</span>
+            <div key={cotacao.id} className="cotacao-card-painel cotacao-card-album">
+              {cotacao.fotos && cotacao.fotos.length > 0 ? (
+                <div className="cotacao-album-capa">
+                  <img src={cotacao.fotos[0]} alt={`Local em ${cotacao.cidade}`} />
+                  {cotacao.fotos.length > 1 && (
+                    <span className="cotacao-album-contador">+{cotacao.fotos.length - 1} fotos</span>
+                  )}
+                  <div className="cotacao-album-capa-overlay">
+                    <strong>{cotacao.cidade}</strong>
                   </div>
                 </div>
-                {jaPegou ? (
-                  <span className="badge badge-verificado">Você já pegou</span>
-                ) : (
-                  <button className="btn btn-primary" onClick={() => abrirProposta(cotacao)}>
-                    Pegar cotação
-                  </button>
-                )}
-              </div>
+              ) : (
+                <div className="cotacao-album-capa cotacao-album-capa-vazia">
+                  <span style={{ fontSize: "1.6rem" }}>📍</span>
+                  <div className="cotacao-album-capa-overlay">
+                    <strong>{cotacao.cidade}</strong>
+                  </div>
+                </div>
+              )}
 
-              <div className="cotacao-card-painel-body">
-                <div className="cotacao-card-painel-itens">
+              <div className="cotacao-album-conteudo">
+                <div className="vagas-progresso">
+                  <div className="vagas-progresso-barra">
+                    {Array.from({ length: MAX_FORNECEDORES_POR_COTACAO }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`vagas-progresso-seg ${i < totalPegos ? `preenchido-${nivelUrgencia}` : ""}`}
+                      />
+                    ))}
+                  </div>
+                  <span className={`vagas-pill vagas-pill-${nivelUrgencia}`}>
+                    {vagas === 1 ? "Última vaga!" : `${vagas} de ${MAX_FORNECEDORES_POR_COTACAO} vagas livres`}
+                  </span>
+                  <span className="badge badge-pendente">{cotacao.horasTotais} Moedas RS</span>
+                </div>
+
+                <div className="cotacao-card-painel-itens" style={{ marginTop: 12 }}>
                   {(cotacao.itens || []).map((item, i) => {
                     const cat = getCategoria(item.categoria);
                     const regime = getOpcaoRegime(item.categoria, item.regime);
@@ -162,24 +179,44 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                   )}
                 </div>
 
-                {cotacao.fotos && cotacao.fotos.length > 0 && (
-                  <div className="cotacao-card-painel-fotos">
-                    {cotacao.fotos.slice(0, 4).map((url, i) => (
-                      <img key={i} src={url} alt={`Foto do local ${i + 1}`} />
-                    ))}
+                {jaPegou ? (
+                  <div className="contato-desbloqueado">
+                    <div className="contato-desbloqueado-head">
+                      <span className="badge badge-verificado">✓ Você pegou esta cotação</span>
+                    </div>
+                    <div className="contato-desbloqueado-dados">
+                      <div>
+                        <span className="mono" style={{ color: "var(--ink-soft)" }}>Telefone</span>
+                        <strong>{cotacao.telefone}</strong>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+                      <a
+                        href={`https://wa.me/55${(cotacao.telefone || "").replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-whatsapp"
+                      >
+                        💬 Falar no WhatsApp
+                      </a>
+                      <a href={`tel:${(cotacao.telefone || "").replace(/\D/g, "")}`} className="btn btn-ghost">
+                        Ligar
+                      </a>
+                      <button className="btn btn-ghost" onClick={() => abrirProposta(cotacao)}>
+                        Editar minha proposta
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  <button
+                    className="btn btn-primary"
+                    style={{ width: "100%", marginTop: 14 }}
+                    onClick={() => abrirProposta(cotacao)}
+                  >
+                    Pegar cotação e ver contato →
+                  </button>
                 )}
               </div>
-
-              {jaPegou && (
-                <button
-                  className="btn btn-ghost"
-                  style={{ marginTop: 10 }}
-                  onClick={() => abrirProposta(cotacao)}
-                >
-                  Editar minha proposta
-                </button>
-              )}
             </div>
           );
         })}
@@ -195,6 +232,13 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                 .map((item) => `${item.quantidade}x ${getCategoria(item.categoria).label}`)
                 .join(", ")}
             </p>
+
+            {!cotacaoAtiva.fornecedoresInteressados.includes(fornecedorLogado.uid) && (
+              <p style={{ fontSize: "0.82rem", color: "var(--ink-soft)", marginBottom: 14 }}>
+                Ao enviar, esta cotação vai custar <strong>{cotacaoAtiva.horasTotais} Moedas RS</strong> do
+                seu saldo, e você desbloqueia o telefone do cliente.
+              </p>
+            )}
 
             {erro && <div className="form-msg-error">{erro}</div>}
 
