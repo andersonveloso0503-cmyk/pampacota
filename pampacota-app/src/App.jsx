@@ -7,20 +7,24 @@ import CadastroFornecedor from "./pages/CadastroFornecedor";
 import Login from "./pages/Login";
 import PerfilFornecedor from "./pages/PerfilFornecedor";
 import AcompanharCotacao from "./pages/AcompanharCotacao";
+import PainelFornecedor from "./pages/PainelFornecedor";
+import Planos from "./pages/Planos";
 import { watchAuthState, buscarFornecedorPorUid, logout } from "./lib/data";
 import "./styles/global.css";
 
 export default function App() {
   const [fornecedor, setFornecedor] = useState(null);
+  const [carregandoAuth, setCarregandoAuth] = useState(true);
 
   useEffect(() => {
     const unsubscribe = watchAuthState(async (user) => {
       if (user) {
-        const dados = await buscarFornecedorPorUid(user.uid).catch(() => null);
+        const dados = await buscarFornecedorPorUid(user.id).catch(() => null);
         setFornecedor(dados);
       } else {
         setFornecedor(null);
       }
+      setCarregandoAuth(false);
     });
     return unsubscribe;
   }, []);
@@ -40,8 +44,21 @@ export default function App() {
           element={<CadastroFornecedor onCadastroOk={setFornecedor} />}
         />
         <Route path="/entrar" element={<Login onLoginOk={setFornecedor} />} />
-        <Route path="/empresa/:slug" element={<PerfilFornecedor />} />
+        <Route
+          path="/empresa/:slug"
+          element={<PerfilFornecedor fornecedorLogado={fornecedor} />}
+        />
         <Route path="/cotacao/:codigo" element={<AcompanharCotacao />} />
+        <Route
+          path="/painel"
+          element={
+            <PainelFornecedor fornecedorLogado={fornecedor} carregandoAuth={carregandoAuth} />
+          }
+        />
+        <Route
+          path="/planos"
+          element={<Planos fornecedorLogado={fornecedor} carregandoAuth={carregandoAuth} />}
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

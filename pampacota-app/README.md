@@ -1,68 +1,36 @@
 # PampaCota — Marketplace de fornecedores RS
 
-## 1. Configurar o Firebase
+## 1. Configurar o Supabase
 
-Abra `src/lib/firebase.js` e troque o objeto `firebaseConfig` pelos dados do
-SEU projeto Firebase (Console → Configurações do projeto → Seus apps → app Web).
+Abra `src/lib/supabase.js` e troque pelos dados do SEU projeto Supabase
+(Project Settings → API → Project URL e anon public key).
 
 ```js
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "...",
-};
+const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
+const SUPABASE_ANON_KEY = "eyJ...";
 ```
 
-## 2. Regras de segurança do Firestore e Storage
+## 2. Criar as tabelas e políticas de segurança
 
-No Console Firebase → Firestore Database → aba **Regras**, cole:
+No painel do Supabase → **SQL Editor** → **New query**, cole todo o conteúdo
+do arquivo `supabase/schema.sql` (deste projeto) e clique em **Run**.
 
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
+Isso cria:
+- Tabela `fornecedores` (cadastro de empresas)
+- Tabela `cotacoes` (pedidos de cotação dos compradores)
+- Políticas de RLS (Row Level Security) equivalentes às regras do Firestore
+- Função `pegar_cotacao` (garante o limite de 4 fornecedores por cotação, de forma
+  atômica, evitando que dois fornecedores "peguem" a última vaga ao mesmo tempo)
+- Bucket de Storage `cotacoes-fotos` para as fotos do local
 
-    // qualquer um pode LER perfis de fornecedor (perfil público)
-    // só o próprio fornecedor pode editar o próprio documento
-    match /fornecedores/{uid} {
-      allow read: if true;
-      allow create: if request.auth != null && request.auth.uid == uid;
-      allow update: if request.auth != null && request.auth.uid == uid;
-      allow delete: if false;
-    }
+## 3. Confirmação de e-mail (opcional, recomendado depois)
 
-    // qualquer um pode criar uma cotação (formulário público, sem login)
-    // qualquer um pode LER (o comprador acessa pelo link único, sem login)
-    // só usuários autenticados (fornecedores) podem atualizar (pegar/propor)
-    match /cotacoes/{id} {
-      allow create: if true;
-      allow read: if true;
-      allow update: if request.auth != null;
-      allow delete: if false;
-    }
-  }
-}
-```
+Por padrão o Supabase exige confirmação de e-mail antes do primeiro login.
+Para testes iniciais, você pode desativar isso temporariamente em:
+**Authentication → Providers → Email → Confirm email** (desmarque a opção).
+Lembre de reativar antes de divulgar o site publicamente.
 
-No Console Firebase → Storage → aba **Rules**, cole:
-
-```
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /cotacoes/{cotacaoId}/{arquivo} {
-      allow read: if true;
-      allow write: if request.resource.size < 8 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
-    }
-  }
-}
-```
-
-## 3. Rodar localmente
+## 4. Rodar localmente
 
 ```bash
 npm install
@@ -71,14 +39,14 @@ npm run dev
 
 Abre em `http://localhost:5173`
 
-## 4. Deploy na Vercel
+## 5. Deploy na Vercel
 
-1. Suba esse projeto pro GitHub (novo repositório, ex: `pampacota`)
-2. Em vercel.com → "Add New Project" → importe o repositório
+1. Suba esse projeto pro GitHub (você já tem o repositório `pampacota`)
+2. Em vercel.com → seu projeto já existente vai fazer redeploy automático após o push
 3. Framework preset: Vite (detecta automático)
-4. Deploy
+4. Root Directory: `pampacota-app` (já configurado)
 
-## 5. Domínio próprio (pampacota.com.br)
+## 6. Domínio próprio (pampacota.com.br)
 
 1. Compre o domínio no Registro.br (ou HostGator) — verifique disponibilidade em
    https://registro.br/busca-dominio/
@@ -107,6 +75,36 @@ src/
   styles/
     global.css      -> todos os tokens de cor, tipografia e componentes visuais
 ```
+
+## 7. Variáveis de ambiente (Asaas + Supabase admin)
+
+As funções serverless em `/api` (criar cobrança, webhook de pagamento) precisam
+de credenciais que NUNCA devem ir para o código nem para o GitHub. Configure
+na Vercel: **seu projeto → Settings → Environment Variables**.
+
+| Nome | Onde pegar |
+|---|---|
+| `ASAAS_API_KEY` | Painel Asaas → Configurações → Integrações → API |
+| `ASAAS_ENV` | `sandbox` (testes) ou `production` (quando a conta real for aprovada) |
+| `ASAAS_WEBHOOK_TOKEN` | Defina uma senha qualquer e cole a mesma no Asaas (Webhooks) |
+| `SUPABASE_URL` | Mesma URL usada em `src/lib/supabase.js` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API → service_role secret |
+
+Depois de configurar, é preciso fazer um novo deploy para as variáveis valerem.
+
+## 8. Configurar o webhook no Asaas
+
+1. No painel Asaas (sandbox por enquanto) → Configurações → Integrações → Webhooks
+2. URL: `https://pampacota.vercel.app/api/webhook-asaas` (ajuste para seu domínio)
+3. Eventos: marque pelo menos `PAYMENT_CONFIRMED` e `PAYMENT_RECEIVED`
+4. Token de acesso: use o mesmo valor de `ASAAS_WEBHOOK_TOKEN`
+5. Salve
+
+## 9. Rodar a migração de Moedas RS
+
+No SQL Editor do Supabase, execute o conteúdo de `supabase/migracao_moedas.sql`.
+Isso adiciona saldo de moedas, histórico de transações, registro de pagamentos
+e atualiza a função `pegar_cotacao` para debitar moedas automaticamente.
 
 ## Próximos passos sugeridos (fase 2)
 

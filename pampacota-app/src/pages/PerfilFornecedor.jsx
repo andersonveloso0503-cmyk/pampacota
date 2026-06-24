@@ -1,34 +1,53 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { buscarFornecedorPorSlug } from "../lib/data";
+import { buscarFornecedorPorSlug, atualizarLogoFornecedor } from "../lib/data";
+import { TIPOS_DOCUMENTO } from "../lib/catalogo";
+import DocumentosFornecedor from "../components/DocumentosFornecedor";
 
-const SELO_LABELS = {
-  federal: "Selo Federal",
-  estadual: "Selo Estadual",
-  trabalhista: "Selo Trabalhista",
-  municipal: "Selo Municipal",
-};
+const SELO_LABELS = TIPOS_DOCUMENTO.reduce((acc, t) => {
+  acc[t.id] = t.label;
+  return acc;
+}, {});
 
-export default function PerfilFornecedor() {
+export default function PerfilFornecedor({ fornecedorLogado }) {
   const { slug } = useParams();
   const [fornecedor, setFornecedor] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [naoEncontrado, setNaoEncontrado] = useState(false);
+  const [enviandoLogo, setEnviandoLogo] = useState(false);
+  const inputLogoRef = useRef(null);
 
   useEffect(() => {
-    let ativo = true;
+    carregar();
+  }, [slug]);
+
+  function carregar() {
+    setCarregando(true);
     buscarFornecedorPorSlug(slug)
       .then((dados) => {
-        if (!ativo) return;
         if (!dados) setNaoEncontrado(true);
         else setFornecedor(dados);
       })
-      .catch(() => ativo && setNaoEncontrado(true))
-      .finally(() => ativo && setCarregando(false));
-    return () => {
-      ativo = false;
-    };
-  }, [slug]);
+      .catch(() => setNaoEncontrado(true))
+      .finally(() => setCarregando(false));
+  }
+
+  const ehProprioPerfil = fornecedorLogado && fornecedorLogado.uid === fornecedor?.uid;
+
+  async function handleLogoChange(e) {
+    const arquivo = e.target.files?.[0];
+    if (!arquivo) return;
+    setEnviandoLogo(true);
+    try {
+      await atualizarLogoFornecedor(fornecedor.uid, arquivo);
+      carregar();
+    } catch (err) {
+      console.error(err);
+      alert("Não foi possível enviar o logo agora. Tente novamente.");
+    } finally {
+      setEnviandoLogo(false);
+    }
+  }
 
   if (carregando) {
     return (
@@ -61,7 +80,33 @@ export default function PerfilFornecedor() {
     <>
       <section className="profile-hero">
         <div className="wrap">
-          <div className="profile-avatar">{inicial}</div>
+          <div className="profile-avatar-wrap">
+            {fornecedor.logoUrl ? (
+              <img src={fornecedor.logoUrl} alt="Logo da empresa" className="profile-avatar-img" />
+            ) : (
+              <div className="profile-avatar">{inicial}</div>
+            )}
+            {ehProprioPerfil && (
+              <>
+                <button
+                  type="button"
+                  className="profile-avatar-edit"
+                  onClick={() => inputLogoRef.current?.click()}
+                  disabled={enviandoLogo}
+                  title={fornecedor.logoUrl ? "Trocar logo" : "Adicionar logo"}
+                >
+                  {enviandoLogo ? "..." : "✎"}
+                </button>
+                <input
+                  ref={inputLogoRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleLogoChange}
+                />
+              </>
+            )}
+          </div>
           <div>
             <h1>{fornecedor.nomeFantasia || fornecedor.razaoSocial}</h1>
             <div className="meta">
@@ -128,6 +173,10 @@ export default function PerfilFornecedor() {
                 Falar no WhatsApp
               </a>
             </div>
+
+            {ehProprioPerfil && (
+              <DocumentosFornecedor uid={fornecedor.uid} onAtualizado={carregar} />
+            )}
           </div>
         </div>
       </section>

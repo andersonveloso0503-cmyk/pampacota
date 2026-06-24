@@ -16,6 +16,9 @@ export default function Header({ fornecedor, onLogout }) {
         <div style={{ display: "flex", gap: 12 }}>
           {fornecedor ? (
             <>
+              <Link to="/painel" className="btn btn-ghost">
+                Painel
+              </Link>
               <Link to={`/empresa/${fornecedor.slug}`} className="btn btn-ghost">
                 Meu perfil
               </Link>

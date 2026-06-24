@@ -19,7 +19,7 @@ export default function Login({ onLoginOk }) {
     setStatus("loading");
     try {
       const user = await loginFornecedor(email, senha);
-      const fornecedor = await buscarFornecedorPorUid(user.uid);
+      const fornecedor = await buscarFornecedorPorUid(user.id);
       onLoginOk?.(fornecedor);
       if (fornecedor?.slug) {
         navigate(`/empresa/${fornecedor.slug}`);

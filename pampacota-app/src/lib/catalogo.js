@@ -97,3 +97,18 @@ export function calcularHorasTotais(itens) {
 export function calcularPessoasTotais(itens) {
   return (itens || []).reduce((total, item) => total + (item.quantidade || 1), 0);
 }
+
+// ---------- Documentos / selos de verificação do fornecedor ----------
+
+export const TIPOS_DOCUMENTO = [
+  { id: "federal", label: "Certidão Federal", descricao: "Certidão Negativa de Débitos Federais" },
+  { id: "estadual", label: "Certidão Estadual", descricao: "Certidão Negativa de Débitos Estaduais" },
+  { id: "trabalhista", label: "Certidão Trabalhista", descricao: "Certidão Negativa de Débitos Trabalhistas (CNDT)" },
+  { id: "municipal", label: "Certidão Municipal", descricao: "Certidão Negativa de Débitos Municipais" },
+  { id: "fgts", label: "Certificado FGTS", descricao: "Certificado de Regularidade do FGTS" },
+  { id: "contrato_social", label: "Contrato Social", descricao: "Contrato social ou último aditivo registrado" },
+];
+
+export function getTipoDocumento(id) {
+  return TIPOS_DOCUMENTO.find((t) => t.id === id);
+}
