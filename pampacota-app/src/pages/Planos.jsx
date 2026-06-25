@@ -63,25 +63,63 @@ export default function Planos({ fornecedorLogado, carregandoAuth }) {
 
         {erro && <div className="form-msg-error">{erro}</div>}
 
-        <h3 style={{ marginBottom: 14 }}>Assinaturas mensais</h3>
-        <div className="planos-grid">
-          {PLANOS.map((plano) => (
-            <div key={plano.id} className="plano-card">
-              <span className="mono" style={{ color: "var(--gold)" }}>{plano.label}</span>
-              <div className="plano-valor">
-                R$ {plano.valor}<span>/mês</span>
-              </div>
-              <p className="plano-moedas">{plano.moedas} Moedas RS por mês</p>
-              <button
-                className="btn btn-primary"
-                style={{ width: "100%" }}
-                disabled={carregandoTipo === plano.id}
-                onClick={() => handleEscolher(plano.id)}
-              >
-                {carregandoTipo === plano.id ? "Gerando cobrança..." : "Assinar"}
-              </button>
+        <div className="planos-com-preview">
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <h3 style={{ marginBottom: 14 }}>Assinaturas mensais</h3>
+            <div className="planos-grid">
+              {PLANOS.map((plano) => (
+                <div key={plano.id} className="plano-card">
+                  <span className="mono" style={{ color: "var(--gold)" }}>{plano.label}</span>
+                  <div className="plano-valor">
+                    R$ {plano.valor}<span>/mês</span>
+                  </div>
+                  <p className="plano-moedas">{plano.moedas} Moedas RS por mês</p>
+                  <button
+                    className="btn btn-primary"
+                    style={{ width: "100%" }}
+                    disabled={carregandoTipo === plano.id}
+                    onClick={() => handleEscolher(plano.id)}
+                  >
+                    {carregandoTipo === plano.id ? "Gerando cobrança..." : "Assinar"}
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className="preview-desbloqueio">
+            <span className="mono" style={{ color: "var(--gold)" }}>O que você desbloqueia</span>
+            <div className="preview-desbloqueio-card">
+              <div className="contato-desbloqueado-head">
+                <span className="badge badge-verificado">✓ Você pegou esta cotação</span>
+              </div>
+              <div className="contato-desbloqueado-corpo">
+                <div className="preview-desbloqueio-foto">📍</div>
+                <div className="contato-desbloqueado-dados">
+                  <div>
+                    <span className="mono" style={{ color: "var(--ink-soft)" }}>Cliente</span>
+                    <strong>Maria Eduarda</strong>
+                  </div>
+                  <div>
+                    <span className="mono" style={{ color: "var(--ink-soft)" }}>Endereço</span>
+                    <strong>Av. Borges de Medeiros, 1000 — Centro, Porto Alegre</strong>
+                  </div>
+                  <div>
+                    <span className="mono" style={{ color: "var(--ink-soft)" }}>Telefone</span>
+                    <strong>(51) 99888-0000</strong>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                <span className="btn btn-whatsapp btn-sm">💬 WhatsApp</span>
+                <span className="btn btn-ghost btn-sm">Ligar</span>
+              </div>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--ink-soft)", marginTop: 10 }}>
+              Exemplo ilustrativo: ao pegar uma cotação, você vê o nome, endereço completo e
+              telefone do cliente, com botões diretos para WhatsApp e ligação.
+            </p>
+          </div>
         </div>
 
         <h3 style={{ margin: "32px 0 14px" }}>Pacotes avulsos (sem assinatura)</h3>

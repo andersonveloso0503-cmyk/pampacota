@@ -576,8 +576,27 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
 .plano-valor span{ font-size:0.9rem; font-weight:500; color:var(--ink-soft); }
 .plano-moedas{ font-size:0.84rem; color:var(--ink-soft); margin-bottom:16px; }
 
+.planos-com-preview{
+  display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start;
+}
+.preview-desbloqueio{
+  flex:1; min-width:280px; max-width:340px;
+}
+.preview-desbloqueio-card{
+  background:var(--white); border:1.5px solid var(--gold);
+  border-radius:14px; padding:20px; margin-top:10px;
+  box-shadow:0 16px 36px -18px rgba(201,162,75,0.4);
+}
+.preview-desbloqueio-foto{
+  width:84px; height:84px; border-radius:10px;
+  background:var(--bg-alt); display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; flex-shrink:0;
+  border:1px solid var(--line);
+}
+
 @media (max-width: 700px){
   .planos-grid{ grid-template-columns:1fr; }
+  .planos-com-preview{ flex-direction:column; }
 }
 
 /* STATUS BADGES */
