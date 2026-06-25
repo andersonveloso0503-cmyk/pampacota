@@ -4,8 +4,11 @@ export default function Header({ fornecedor, onLogout }) {
   return (
     <header className="site-header">
       <div className="nav">
-        <Link to="/" className="logo">
-          <span className="dot"></span> PampaCota
+        <Link to="/" className="logo-wrap">
+          <span className="logo">
+            <span className="dot"></span> PampaCota
+          </span>
+          <span className="logo-faixa-rs" aria-hidden="true"></span>
         </Link>
         <div className="nav-links">
           <Link to="/#como-funciona">Como funciona</Link>
@@ -14,13 +17,13 @@ export default function Header({ fornecedor, onLogout }) {
           <Link to="/planos">Planos</Link>
           <Link to="/#depoimentos">Depoimentos</Link>
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
+        <div className="nav-actions">
           {fornecedor ? (
             <>
               <Link to="/painel" className="btn btn-ghost">
                 Painel
               </Link>
-              <Link to={`/empresa/${fornecedor.slug}`} className="btn btn-ghost">
+              <Link to={`/empresa/${fornecedor.slug}`} className="btn btn-ghost nav-actions-perfil">
                 Meu perfil
               </Link>
               <button onClick={onLogout} className="btn btn-primary">

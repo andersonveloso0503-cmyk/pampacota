@@ -55,6 +55,9 @@ header.site-header{
 .nav{
   display:flex; align-items:center; justify-content:space-between;
   padding:18px 28px; max-width:1180px; margin:0 auto;
+}.logo-wrap{
+  display:flex; flex-direction:column;
+  flex-shrink:0;
 }
 .logo{
   display:flex; align-items:center; gap:10px;
@@ -64,6 +67,17 @@ header.site-header{
 .logo .dot{
   width:9px;height:9px;border-radius:50%;
   background:var(--gold);
+}.logo-faixa-rs{
+  display:block;
+  height:3px; width:100%;
+  margin-top:3px; border-radius:2px;
+  background:linear-gradient(
+    90deg,
+    #009245 0%, #009245 33%,
+    #C1272D 33%, #C1272D 66%,
+    #FCB711 66%, #FCB711 100%
+  );
+  opacity:0.85;
 }
 .nav-links{display:flex; gap:32px; align-items:center;}
 .nav-links a{font-size:0.92rem; font-weight:600; color:var(--ink-soft); transition:color .2s;}
