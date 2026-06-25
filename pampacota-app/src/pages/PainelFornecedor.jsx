@@ -184,10 +184,33 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                     <div className="contato-desbloqueado-head">
                       <span className="badge badge-verificado">✓ Você pegou esta cotação</span>
                     </div>
-                    <div className="contato-desbloqueado-dados">
-                      <div>
-                        <span className="mono" style={{ color: "var(--ink-soft)" }}>Telefone</span>
-                        <strong>{cotacao.telefone}</strong>
+                    <div className="contato-desbloqueado-corpo">
+                      {cotacao.fotos && cotacao.fotos.length > 0 && (
+                        <img
+                          src={cotacao.fotos[0]}
+                          alt="Foto do local"
+                          className="contato-desbloqueado-foto"
+                        />
+                      )}
+                      <div className="contato-desbloqueado-dados">
+                        {cotacao.nome && (
+                          <div>
+                            <span className="mono" style={{ color: "var(--ink-soft)" }}>Cliente</span>
+                            <strong>{cotacao.nome}</strong>
+                          </div>
+                        )}
+                        <div>
+                          <span className="mono" style={{ color: "var(--ink-soft)" }}>Endereço</span>
+                          <strong>
+                            {[cotacao.rua, cotacao.numero].filter(Boolean).join(", ")}
+                            {cotacao.bairro ? ` — ${cotacao.bairro}` : ""}
+                            {cotacao.cidade ? `, ${cotacao.cidade}` : ""}
+                          </strong>
+                        </div>
+                        <div>
+                          <span className="mono" style={{ color: "var(--ink-soft)" }}>Telefone</span>
+                          <strong>{cotacao.telefone}</strong>
+                        </div>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>

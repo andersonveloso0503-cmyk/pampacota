@@ -17,7 +17,15 @@ function novoItem() {
 export default function Home() {
   const [etapaCotacao, setEtapaCotacao] = useState(1);
   const [itens, setItens] = useState([novoItem()]);
-  const [dadosContato, setDadosContato] = useState({ cidade: "", telefone: "", descricao: "" });
+  const [dadosContato, setDadosContato] = useState({
+    nome: "",
+    cidade: "",
+    rua: "",
+    numero: "",
+    bairro: "",
+    telefone: "",
+    descricao: "",
+  });
   const [fotos, setFotos] = useState([]);
   const [status, setStatus] = useState("idle"); // idle | loading | ok | error
   const [errorMsg, setErrorMsg] = useState("");
@@ -58,9 +66,14 @@ export default function Home() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!dadosContato.cidade.trim() || !dadosContato.telefone.trim()) {
+    if (
+      !dadosContato.nome.trim() ||
+      !dadosContato.cidade.trim() ||
+      !dadosContato.rua.trim() ||
+      !dadosContato.telefone.trim()
+    ) {
       setStatus("error");
-      setErrorMsg("Preencha cidade e telefone para receber as propostas.");
+      setErrorMsg("Preencha nome, endereço e telefone para receber as propostas.");
       return;
     }
     setStatus("loading");
@@ -77,7 +90,7 @@ export default function Home() {
       setStatus("ok");
       setLinkAcompanhamento(`${window.location.origin}/cotacao/${cotacao.codigoAcesso}`);
       setItens([novoItem()]);
-      setDadosContato({ cidade: "", telefone: "", descricao: "" });
+      setDadosContato({ nome: "", cidade: "", rua: "", numero: "", bairro: "", telefone: "", descricao: "" });
       setFotos([]);
       setEtapaCotacao(1);
     } catch (err) {
@@ -197,7 +210,47 @@ export default function Home() {
               <>
                 <p className="sub">Agora seus dados de contato e do local.</p>
 
+                <div className="field">
+                  <label>Seu nome</label>
+                  <input
+                    type="text"
+                    placeholder="Como podemos te chamar?"
+                    value={dadosContato.nome}
+                    onChange={(e) => updateContato("nome", e.target.value)}
+                  />
+                </div>
+
                 <div className="field-row">
+                  <div className="field">
+                    <label>Rua</label>
+                    <input
+                      type="text"
+                      placeholder="Av. Borges de Medeiros"
+                      value={dadosContato.rua}
+                      onChange={(e) => updateContato("rua", e.target.value)}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Número</label>
+                    <input
+                      type="text"
+                      placeholder="1000"
+                      value={dadosContato.numero}
+                      onChange={(e) => updateContato("numero", e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="field-row">
+                  <div className="field">
+                    <label>Bairro</label>
+                    <input
+                      type="text"
+                      placeholder="Centro Histórico"
+                      value={dadosContato.bairro}
+                      onChange={(e) => updateContato("bairro", e.target.value)}
+                    />
+                  </div>
                   <div className="field">
                     <label>Cidade</label>
                     <input
@@ -207,15 +260,16 @@ export default function Home() {
                       onChange={(e) => updateContato("cidade", e.target.value)}
                     />
                   </div>
-                  <div className="field">
-                    <label>Telefone / WhatsApp</label>
-                    <input
-                      type="text"
-                      placeholder="(51) 9...."
-                      value={dadosContato.telefone}
-                      onChange={(e) => updateContato("telefone", e.target.value)}
-                    />
-                  </div>
+                </div>
+
+                <div className="field">
+                  <label>Telefone / WhatsApp</label>
+                  <input
+                    type="text"
+                    placeholder="(51) 9...."
+                    value={dadosContato.telefone}
+                    onChange={(e) => updateContato("telefone", e.target.value)}
+                  />
                 </div>
                 <div className="field">
                   <label>Fotos do local (até 5)</label>
