@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { criarCobranca } from "../lib/data";
 
 const PLANOS = [
@@ -14,6 +14,7 @@ const PACOTES = [
 ];
 
 export default function Planos({ fornecedorLogado, carregandoAuth }) {
+  const location = useLocation();
   const [carregandoTipo, setCarregandoTipo] = useState(null);
   const [erro, setErro] = useState("");
 
@@ -44,7 +45,7 @@ export default function Planos({ fornecedorLogado, carregandoAuth }) {
   }
 
   if (!fornecedorLogado) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/entrar" state={{ from: location.pathname }} replace />;
   }
 
   return (

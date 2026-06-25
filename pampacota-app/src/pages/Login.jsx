@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { loginFornecedor, buscarFornecedorPorUid } from "../lib/data";
 
 export default function Login({ onLoginOk }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [status, setStatus] = useState("idle");
@@ -21,7 +22,13 @@ export default function Login({ onLoginOk }) {
       const user = await loginFornecedor(email, senha);
       const fornecedor = await buscarFornecedorPorUid(user.id);
       onLoginOk?.(fornecedor);
-      if (fornecedor?.slug) {
+
+      // volta para a página que o levou até o login (ex: /planos),
+      // ou vai para o perfil como destino padrão se não houver origem
+      const destino = location.state?.from;
+      if (destino) {
+        navigate(destino);
+      } else if (fornecedor?.slug) {
         navigate(`/empresa/${fornecedor.slug}`);
       } else {
         navigate("/");

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import {
   listarCotacoesAbertas,
   pegarCotacao,
@@ -9,6 +9,7 @@ import {
 import { getCategoria, getOpcaoRegime } from "../lib/catalogo";
 
 export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
+  const location = useLocation();
   const [cotacoes, setCotacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [cotacaoAtiva, setCotacaoAtiva] = useState(null); // cotação aberta no modal de proposta
@@ -85,7 +86,7 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
   }
 
   if (!fornecedorLogado) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/entrar" state={{ from: location.pathname }} replace />;
   }
 
   return (
