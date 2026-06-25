@@ -363,14 +363,11 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
 }
 .cotacao-album-capa{
   position:relative;
-  width:120px; height:120px;
+  width:100%; height:140px;
   border-radius:12px;
   background:var(--bg-alt);
   overflow:hidden;
   margin-bottom:14px;
-  box-shadow:0 6px 16px -6px rgba(16,42,32,0.25);
-  border:3px solid var(--white);
-  outline:1px solid var(--line);
 }
 .cotacao-album-capa img{
   width:100%; height:100%; object-fit:cover;
@@ -493,6 +490,37 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
   border-radius:10px; padding:10px 16px;
 }
 .saldo-moedas-card strong{ color:var(--green-deep); font-size:1.05rem; }
+
+.painel-header{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  flex-wrap:wrap; gap:10px; margin-bottom:20px;
+}
+.saldo-moedas-card-compacta{
+  padding:6px 10px; gap:6px;
+}
+.saldo-moedas-card-compacta .mono{ font-size:0.66rem; color:var(--ink-soft); }
+.saldo-moedas-card-compacta strong{ font-size:0.92rem; }
+.btn-sm{ padding:6px 12px; font-size:0.78rem; }
+
+.cotacoes-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
+}
+@media (max-width: 980px){
+  .cotacoes-grid{ grid-template-columns:repeat(2, 1fr); }
+}
+@media (max-width: 680px){
+  .cotacoes-grid{ grid-template-columns:1fr; }
+}
+
+.contato-galeria-fotos{
+  display:flex; gap:6px; flex-wrap:wrap; margin:10px 0;
+}
+.contato-galeria-fotos img{
+  width:54px; height:54px; object-fit:cover; border-radius:8px;
+  border:1px solid var(--line);
+}
 
 .planos-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 .plano-card{

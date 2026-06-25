@@ -89,24 +89,25 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
   }
 
   return (
-    <section style={{ padding: "50px 0" }}>
-      <div className="wrap" style={{ maxWidth: 880 }}>
-        <span className="mono" style={{ color: "var(--gold)" }}>
-          Painel do fornecedor
-        </span>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12 }}>
-          <h1 style={{ fontSize: "1.9rem", color: "var(--green-deep)", marginTop: 8, marginBottom: 0 }}>
-            Cotações abertas
-          </h1>
-          <div className="saldo-moedas-card">
-            <span className="mono" style={{ color: "var(--ink-soft)" }}>Saldo</span>
-            <strong>{fornecedorLogado.saldoMoedas || 0} Moedas RS</strong>
-            <Link to="/planos" className="btn btn-gold" style={{ marginLeft: 12 }}>
-              Comprar / Assinar
+    <section style={{ padding: "30px 0 50px" }}>
+      <div className="wrap" style={{ maxWidth: 1180 }}>
+        <div className="painel-header">
+          <div>
+            <span className="mono" style={{ color: "var(--gold)" }}>
+              Painel do fornecedor
+            </span>
+            <h1 style={{ fontSize: "1.5rem", color: "var(--green-deep)", margin: "4px 0 0" }}>
+              Cotações abertas
+            </h1>
+          </div>
+          <div className="saldo-moedas-card saldo-moedas-card-compacta">
+            <span className="mono">Saldo</span>
+            <strong>{fornecedorLogado.saldoMoedas || 0}</strong>
+            <Link to="/planos" className="btn btn-gold btn-sm">
+              Comprar
             </Link>
           </div>
         </div>
-        <div style={{ height: 24 }} />
 
         {carregando && <p style={{ color: "var(--ink-soft)" }}>Carregando cotações...</p>}
 
@@ -118,7 +119,8 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
           </div>
         )}
 
-        {cotacoes.map((cotacao) => {
+        <div className="cotacoes-grid">
+          {cotacoes.map((cotacao) => {
           const totalPegos = cotacao.fornecedoresInteressados.length;
           const jaPegou = cotacao.fornecedoresInteressados.includes(fornecedorLogado.uid);
           const vagas = MAX_FORNECEDORES_POR_COTACAO - totalPegos;
@@ -179,8 +181,17 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                     <div className="contato-desbloqueado-head">
                       <span className="badge badge-verificado">✓ Você pegou esta cotação</span>
                     </div>
+
+                    {cotacao.fotos && cotacao.fotos.length > 1 && (
+                      <div className="contato-galeria-fotos">
+                        {cotacao.fotos.map((url, i) => (
+                          <img key={i} src={url} alt={`Foto do local ${i + 1}`} />
+                        ))}
+                      </div>
+                    )}
+
                     <div className="contato-desbloqueado-corpo">
-                      {cotacao.fotos && cotacao.fotos.length > 0 && (
+                      {cotacao.fotos && cotacao.fotos.length === 1 && (
                         <img
                           src={cotacao.fotos[0]}
                           alt="Foto do local"
@@ -208,26 +219,26 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                         </div>
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
                       <a
                         href={`https://wa.me/55${(cotacao.telefone || "").replace(/\D/g, "")}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn btn-whatsapp"
+                        className="btn btn-whatsapp btn-sm"
                       >
-                        💬 Falar no WhatsApp
+                        💬 WhatsApp
                       </a>
-                      <a href={`tel:${(cotacao.telefone || "").replace(/\D/g, "")}`} className="btn btn-ghost">
+                      <a href={`tel:${(cotacao.telefone || "").replace(/\D/g, "")}`} className="btn btn-ghost btn-sm">
                         Ligar
                       </a>
-                      <button className="btn btn-ghost" onClick={() => abrirProposta(cotacao)}>
-                        Editar minha proposta
+                      <button className="btn btn-ghost btn-sm" onClick={() => abrirProposta(cotacao)}>
+                        Editar proposta
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-sm"
                     style={{ width: "100%", marginTop: 14 }}
                     onClick={() => abrirProposta(cotacao)}
                   >
@@ -238,6 +249,7 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
             </div>
           );
         })}
+        </div>
       </div>
 
       {cotacaoAtiva && (
