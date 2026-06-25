@@ -359,13 +359,18 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
 
 /* ÁLBUM-STYLE CARD */
 .cotacao-card-album{
-  padding:0; overflow:hidden;
+  padding:18px 22px 22px;
 }
 .cotacao-album-capa{
   position:relative;
-  width:100%; height:180px;
+  width:120px; height:120px;
+  border-radius:12px;
   background:var(--bg-alt);
   overflow:hidden;
+  margin-bottom:14px;
+  box-shadow:0 6px 16px -6px rgba(16,42,32,0.25);
+  border:3px solid var(--white);
+  outline:1px solid var(--line);
 }
 .cotacao-album-capa img{
   width:100%; height:100%; object-fit:cover;
@@ -376,21 +381,17 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
   background:linear-gradient(135deg, var(--bg-alt), var(--bg));
 }
 .cotacao-album-contador{
-  position:absolute; top:12px; right:12px;
+  position:absolute; top:4px; right:4px;
   background:rgba(16,42,32,0.75); color:var(--white);
-  font-size:0.72rem; font-weight:700;
-  padding:4px 10px; border-radius:20px;
-}
-.cotacao-album-capa-overlay{
-  position:absolute; left:0; bottom:0; right:0;
-  padding:30px 18px 12px;
-  background:linear-gradient(to top, rgba(16,42,32,0.85), transparent);
-}
-.cotacao-album-capa-overlay strong{
-  color:var(--white); font-size:1.1rem; font-family:'Fraunces',serif;
+  font-size:0.6rem; font-weight:700;
+  padding:2px 6px; border-radius:10px;
 }
 .cotacao-album-conteudo{
-  padding:18px 22px 22px;
+  padding:0;
+}
+.cotacao-card-album .cotacao-cidade-titulo{
+  display:block; font-size:1.05rem; color:var(--green-deep);
+  font-family:'Fraunces',serif; font-weight:600; margin-bottom:4px;
 }
 
 .btn-whatsapp{

@@ -130,22 +130,17 @@ export default function PainelFornecedor({ fornecedorLogado, carregandoAuth }) {
                 <div className="cotacao-album-capa">
                   <img src={cotacao.fotos[0]} alt={`Local em ${cotacao.cidade}`} />
                   {cotacao.fotos.length > 1 && (
-                    <span className="cotacao-album-contador">+{cotacao.fotos.length - 1} fotos</span>
+                    <span className="cotacao-album-contador">+{cotacao.fotos.length - 1}</span>
                   )}
-                  <div className="cotacao-album-capa-overlay">
-                    <strong>{cotacao.cidade}</strong>
-                  </div>
                 </div>
               ) : (
                 <div className="cotacao-album-capa cotacao-album-capa-vazia">
                   <span style={{ fontSize: "1.6rem" }}>📍</span>
-                  <div className="cotacao-album-capa-overlay">
-                    <strong>{cotacao.cidade}</strong>
-                  </div>
                 </div>
               )}
 
               <div className="cotacao-album-conteudo">
+                <strong className="cotacao-cidade-titulo">{cotacao.cidade}</strong>
                 <div className="vagas-progresso">
                   <div className="vagas-progresso-barra">
                     {Array.from({ length: MAX_FORNECEDORES_POR_COTACAO }).map((_, i) => (
