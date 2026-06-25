@@ -522,6 +522,14 @@ footer.site-footer{padding:60px 0 30px; border-top:1px solid var(--line); margin
   border:1px solid var(--line);
 }
 
+.admin-tabela{ display:flex; flex-direction:column; gap:10px; }
+.admin-linha{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  background:var(--white); border:1px solid var(--line); border-radius:10px;
+  padding:14px 18px; flex-wrap:wrap; gap:12px;
+}
+.admin-linha-info{ display:flex; flex-direction:column; gap:4px; }
+
 .planos-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 .plano-card{
   background:var(--white); border:1.5px solid var(--line); border-radius:14px;

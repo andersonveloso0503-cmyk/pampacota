@@ -380,6 +380,72 @@ export async function escolherFornecedor(cotacaoId, fornecedorUid) {
   if (error) throw error;
 }
 
+/**
+ * Exclui a cotação e suas fotos associadas no Storage.
+ * Usado pelo próprio comprador (via link único de acompanhamento) para
+ * remover uma cotação que não quer mais manter ativa.
+ */
+export async function excluirCotacao(cotacaoId) {
+  // 1. lista e remove os arquivos de foto dessa cotação no Storage
+  const { data: arquivos } = await supabase.storage.from("cotacoes-fotos").list(cotacaoId);
+  if (arquivos && arquivos.length > 0) {
+    const caminhos = arquivos.map((a) => `${cotacaoId}/${a.name}`);
+    await supabase.storage.from("cotacoes-fotos").remove(caminhos);
+  }
+
+  // 2. remove o registro da cotação no banco
+  const { error } = await supabase.from("cotacoes").delete().eq("id", cotacaoId);
+  if (error) throw error;
+}
+
+// ---------- ADMIN ----------
+
+/**
+ * Verifica se o usuário atualmente logado é administrador.
+ * Retorna false (em vez de lançar erro) se não houver sessão ou não for admin.
+ */
+export async function verificarSeEhAdmin() {
+  const { data: sessao } = await supabase.auth.getSession();
+  const user = sessao.session?.user;
+  if (!user) return false;
+
+  const { data, error } = await supabase.from("admins").select("uid").eq("uid", user.id).maybeSingle();
+  if (error) return false;
+  return !!data;
+}
+
+export async function listarTodasCotacoesAdmin() {
+  const { data, error } = await supabase
+    .from("cotacoes")
+    .select("*")
+    .order("criado_em", { ascending: false });
+  if (error) throw error;
+  return (data || []).map(mapCotacaoFromDb);
+}
+
+export async function listarTodosFornecedoresAdmin() {
+  const { data, error } = await supabase
+    .from("fornecedores")
+    .select("*")
+    .order("criado_em", { ascending: false });
+  if (error) throw error;
+  return (data || []).map(mapFornecedorFromDb);
+}
+
+export async function adminExcluirCotacao(cotacaoId) {
+  return excluirCotacao(cotacaoId);
+}
+
+export async function adminAtualizarStatusFornecedor(uid, status) {
+  const { error } = await supabase.from("fornecedores").update({ status }).eq("uid", uid);
+  if (error) throw error;
+}
+
+export async function adminAtualizarSelosFornecedor(uid, selos) {
+  const { error } = await supabase.from("fornecedores").update({ selos }).eq("uid", uid);
+  if (error) throw error;
+}
+
 function mapCotacaoFromDb(row) {
   return {
     id: row.id,

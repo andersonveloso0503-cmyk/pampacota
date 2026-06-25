@@ -9,20 +9,28 @@ import PerfilFornecedor from "./pages/PerfilFornecedor";
 import AcompanharCotacao from "./pages/AcompanharCotacao";
 import PainelFornecedor from "./pages/PainelFornecedor";
 import Planos from "./pages/Planos";
-import { watchAuthState, buscarFornecedorPorUid, logout } from "./lib/data";
+import LoginAdmin from "./pages/LoginAdmin";
+import PainelAdmin from "./pages/PainelAdmin";
+import { watchAuthState, buscarFornecedorPorUid, verificarSeEhAdmin, logout } from "./lib/data";
 import "./styles/global.css";
 
 export default function App() {
   const [fornecedor, setFornecedor] = useState(null);
+  const [ehAdmin, setEhAdmin] = useState(false);
   const [carregandoAuth, setCarregandoAuth] = useState(true);
 
   useEffect(() => {
     const unsubscribe = watchAuthState(async (user) => {
       if (user) {
-        const dados = await buscarFornecedorPorUid(user.id).catch(() => null);
+        const [dados, admin] = await Promise.all([
+          buscarFornecedorPorUid(user.id).catch(() => null),
+          verificarSeEhAdmin().catch(() => false),
+        ]);
         setFornecedor(dados);
+        setEhAdmin(admin);
       } else {
         setFornecedor(null);
+        setEhAdmin(false);
       }
       setCarregandoAuth(false);
     });
@@ -32,6 +40,7 @@ export default function App() {
   async function handleLogout() {
     await logout();
     setFornecedor(null);
+    setEhAdmin(false);
   }
 
   return (
@@ -58,6 +67,11 @@ export default function App() {
         <Route
           path="/planos"
           element={<Planos fornecedorLogado={fornecedor} carregandoAuth={carregandoAuth} />}
+        />
+        <Route path="/admin/entrar" element={<LoginAdmin onLoginOk={setEhAdmin} />} />
+        <Route
+          path="/admin"
+          element={<PainelAdmin ehAdmin={ehAdmin} carregandoAuth={carregandoAuth} />}
         />
       </Routes>
       <Footer />

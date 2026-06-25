@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   buscarCotacaoPorCodigo,
   escolherFornecedor,
   buscarFornecedorPorUid,
+  excluirCotacao,
   MAX_FORNECEDORES_POR_COTACAO,
 } from "../lib/data";
 import { getCategoria, getOpcaoRegime } from "../lib/catalogo";
 
 export default function AcompanharCotacao() {
   const { codigo } = useParams();
+  const navigate = useNavigate();
   const [cotacao, setCotacao] = useState(null);
   const [fornecedoresPropostas, setFornecedoresPropostas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [naoEncontrada, setNaoEncontrada] = useState(false);
   const [escolhendo, setEscolhendo] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
 
   useEffect(() => {
     carregar();
@@ -60,6 +63,25 @@ export default function AcompanharCotacao() {
       alert("Não foi possível confirmar agora. Tente novamente.");
     } finally {
       setEscolhendo(false);
+    }
+  }
+
+  async function handleExcluir() {
+    if (
+      !confirm(
+        "Tem certeza que deseja excluir esta cotação? Essa ação não pode ser desfeita e as fotos enviadas também serão removidas."
+      )
+    ) {
+      return;
+    }
+    setExcluindo(true);
+    try {
+      await excluirCotacao(cotacao.id);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      alert("Não foi possível excluir agora. Tente novamente.");
+      setExcluindo(false);
     }
   }
 
@@ -195,6 +217,25 @@ export default function AcompanharCotacao() {
             );
           })}
         </div>
+
+        {cotacao.status !== "fechada_escolhida" && (
+          <div style={{ textAlign: "center", marginTop: 30 }}>
+            <button
+              onClick={handleExcluir}
+              disabled={excluindo}
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--red)",
+                fontSize: "0.82rem",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              {excluindo ? "Excluindo..." : "Excluir esta cotação"}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

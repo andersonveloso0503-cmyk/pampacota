@@ -57,7 +57,7 @@ export default function PerfilFornecedor({ fornecedorLogado }) {
     );
   }
 
-  if (naoEncontrado || !fornecedor) {
+  if (naoEncontrado || !fornecedor || fornecedor.status === "banido") {
     return (
       <div className="wrap" style={{ padding: "100px 28px", textAlign: "center" }}>
         <h2 style={{ marginBottom: 14 }}>Perfil não encontrado</h2>

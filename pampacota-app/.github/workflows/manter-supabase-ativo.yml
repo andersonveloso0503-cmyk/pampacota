@@ -1,0 +1,19 @@
+name: Manter Supabase ativo
+
+# Executa a cada 3 dias (bem dentro da janela de 7 dias antes da pausa por
+# inatividade do plano gratuito do Supabase), além de poder ser disparado
+# manualmente pela aba "Actions" do GitHub quando quiser.
+on:
+  schedule:
+    - cron: "0 9 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fazer uma requisição simples ao Supabase
+        run: |
+          curl -s -o /dev/null -w "Status: %{http_code}\n" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/fornecedores?select=uid&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
