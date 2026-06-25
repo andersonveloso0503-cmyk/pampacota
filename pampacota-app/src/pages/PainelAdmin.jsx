@@ -83,9 +83,17 @@ export default function PainelAdmin({ ehAdmin, carregandoAuth }) {
         <span className="mono" style={{ color: "var(--gold)" }}>
           Administração
         </span>
-        <h1 style={{ fontSize: "1.7rem", color: "var(--green-deep)", margin: "4px 0 24px" }}>
+        <h1 style={{ fontSize: "1.7rem", color: "var(--green-deep)", margin: "4px 0 16px" }}>
           Painel PampaCota
         </h1>
+
+        <div className="aviso-infra">
+          <strong>⚠ Ambiente de testes:</strong> hospedagem na Vercel (plano Hobby,
+          uso não-comercial) e pagamentos no Asaas (sandbox, sem cobrança real).
+          Antes de divulgar para o público e cobrar de fornecedores de verdade,
+          é necessário migrar a hospedagem (Vercel Pro ou Netlify) e o Asaas
+          para o ambiente de produção.
+        </div>
 
         <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
           <button
