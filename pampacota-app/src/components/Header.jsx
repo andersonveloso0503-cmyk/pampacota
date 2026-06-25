@@ -11,6 +11,7 @@ export default function Header({ fornecedor, onLogout }) {
           <Link to="/#como-funciona">Como funciona</Link>
           <Link to="/#categorias">Categorias</Link>
           <Link to="/#fornecedores">Para fornecedores</Link>
+          <Link to="/planos">Planos</Link>
           <Link to="/#depoimentos">Depoimentos</Link>
         </div>
         <div style={{ display: "flex", gap: 12 }}>
