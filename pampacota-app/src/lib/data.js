@@ -252,10 +252,12 @@ async function uploadFotosCotacao(cotacaoId, fotos) {
   const urls = [];
   for (let i = 0; i < limitadas.length; i++) {
     const arquivo = limitadas[i];
-    const caminho = `${cotacaoId}/foto_${i}_${arquivo.name}`;
+    const extensao = (arquivo.name.split(".").pop() || "jpg").toLowerCase();
+    const caminho = `${cotacaoId}/foto_${i}.${extensao}`;
     const { error } = await supabase.storage.from("cotacoes-fotos").upload(caminho, arquivo, {
       cacheControl: "3600",
       upsert: true,
+      contentType: arquivo.type || "image/jpeg",
     });
     if (error) throw error;
     const { data } = supabase.storage.from("cotacoes-fotos").getPublicUrl(caminho);
