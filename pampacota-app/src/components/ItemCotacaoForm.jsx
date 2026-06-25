@@ -38,12 +38,31 @@ export default function ItemCotacaoForm({ item, onChange, onRemove, podeRemover 
       <div className="field-row">
         <div className="field">
           <label>Quantidade de pessoas</label>
-          <input
-            type="number"
-            min={1}
-            value={item.quantidade}
-            onChange={(e) => update("quantidade", Math.max(1, Number(e.target.value) || 1))}
-          />
+          <div className="quantidade-stepper">
+            <button
+              type="button"
+              className="quantidade-stepper-btn"
+              onClick={() => update("quantidade", Math.max(1, (item.quantidade || 1) - 1))}
+              aria-label="Diminuir quantidade"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min={1}
+              inputMode="numeric"
+              value={item.quantidade}
+              onChange={(e) => update("quantidade", Math.max(1, Number(e.target.value) || 1))}
+            />
+            <button
+              type="button"
+              className="quantidade-stepper-btn"
+              onClick={() => update("quantidade", (item.quantidade || 1) + 1)}
+              aria-label="Aumentar quantidade"
+            >
+              +
+            </button>
+          </div>
         </div>
         <div className="field">
           <label>Regime / carga horária</label>
